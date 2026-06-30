@@ -1,38 +1,46 @@
-import { createSlice } from "@reduxjs/toolkit";
+
+import { createSlice } from '@reduxjs/toolkit';
 
 export const CartSlice = createSlice({
-  name: "cart",
+  name: 'cart',
   initialState: {
-    items: [], // Array of { name, image, cost, quantity }
+    items: [], // Initialize items as an empty array to hold cart objects
   },
   reducers: {
+    // 1. addItem reducer
     addItem: (state, action) => {
-      const { name, image, cost } = action.payload;
-      const existingItem = state.items.find((item) => item.name === name);
+      const { name, image, cost } = action.payload; // Destructure product details from the action payload
+      // Check if the item already exists in the cart by comparing names
+      const existingItem = state.items.find(item => item.name === name);
       if (existingItem) {
+        // If item already exists in the cart, increase its quantity
         existingItem.quantity++;
       } else {
+        // If item does not exist, add it to the cart with quantity 1
         state.items.push({ name, image, cost, quantity: 1 });
       }
     },
+    
+    // 2. removeItem reducer
     removeItem: (state, action) => {
-      state.items = state.items.filter((item) => item.name !== action.payload);
+      // Filters out the item matching the payload name from the array
+      state.items = state.items.filter(item => item.name !== action.payload);
     },
+    
+    // 3. updateQuantity reducer
     updateQuantity: (state, action) => {
-      const { name, quantity } = action.payload;
-      const itemToUpdate = state.items.find((item) => item.name === name);
+      const { name, quantity } = action.payload; // Destructure name and new quantity
+      // Find the item in the cart that matches the given name
+      const itemToUpdate = state.items.find(item => item.name === name);
       if (itemToUpdate) {
-        itemToUpdate.quantity = quantity;
-      }
-
-      // Rubric Requirement: Handle the consequence of items reaching zero
-      if (quantity <= 0) {
-        state.items = state.items.filter((item) => item.name !== name);
+        itemToUpdate.quantity = quantity; // Update its quantity to the new value
       }
     },
   },
 });
 
+// Export the action creators to use in components (ProductList.jsx and CartItem.jsx)
 export const { addItem, removeItem, updateQuantity } = CartSlice.actions;
 
+// Export the reducer as the default to use in configureStore inside store.js
 export default CartSlice.reducer;

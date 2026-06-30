@@ -1,278 +1,139 @@
-import { useState } from "react";
-import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
-import { addItem } from "./CartSlice";
-import "./ProductList.css";
-import CartItem from "./CartItem";
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addItem } from './CartSlice'; // Adjust path if CartSlice is in another directory
+import CartItem from './CartItem'; // Make sure to import your Cart component
+import './ProductList.css'; 
 
-function ProductList({ onHomeClick }) {
-  const [showCart, setShowCart] = useState(false);
+function ProductList() {
   const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart.items);
-  const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+  
+  // Toggle state to switch between Plant Listing and Cart View
+  const [showCart, setShowCart] = useState(false);
+  
+  // Access the Redux store to track items currently in the cart
+  const cartItems = useSelector((state) => state.cart.items);
+  
+  // Local state to track which products have been added to the cart
+  const [addedToCart, setAddedToCart] = useState({});
 
+  // Mock array structure
   const plantsArray = [
     {
-      category: "Air Purifying Plants",
+      category: "Air Purifying",
       plants: [
         {
           name: "Snake Plant",
-          image:
-            "https://cdn.pixabay.com/photo/2021/01/22/06/04/snake-plant-5939187_1280.jpg",
-          description: "Produces oxygen at night, improving air quality.",
-          cost: "$15",
+          image: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?w=500",
+          description: "Produces oxygen at night and improves air quality.",
+          cost: 15
         },
         {
           name: "Spider Plant",
-          image:
-            "https://cdn.pixabay.com/photo/2018/07/11/06/47/chlorophytum-3530413_1280.jpg",
-          description: "Filters formaldehyde and xylene from the air.",
-          cost: "$12",
-        },
-        {
-          name: "Peace Lily",
-          image:
-            "https://cdn.pixabay.com/photo/2019/06/12/14/14/peace-lilies-4269365_1280.jpg",
-          description: "Removes mold spores and purifies the air.",
-          cost: "$18",
-        },
-        {
-          name: "Boston Fern",
-          image:
-            "https://cdn.pixabay.com/photo/2020/04/30/19/52/boston-fern-5114414_1280.jpg",
-          description: "Adds humidity to the air and removes toxins.",
-          cost: "$20",
-        },
-        {
-          name: "Rubber Plant",
-          image:
-            "https://cdn.pixabay.com/photo/2020/02/15/11/49/flower-4850729_1280.jpg",
-          description: "Easy to care for and effective at removing toxins.",
-          cost: "$17",
-        },
-        {
-          name: "Aloe Vera",
-          image:
-            "https://cdn.pixabay.com/photo/2018/04/02/07/42/leaf-3283175_1280.jpg",
-          description: "Purifies the air and has healing properties for skin.",
-          cost: "$14",
-        },
-      ],
+          image: "https://images.unsplash.com/photo-1572688484438-313a6e50c333?w=500",
+          description: "Filters airborne toxins and is extremely easy to grow.",
+          cost: 12
+        }
+      ]
     },
     {
-      category: "Aromatic Fragrant Plants",
+      category: "Aromatic",
       plants: [
         {
           name: "Lavender",
-          image:
-            "https://images.unsplash.com/photo-1611909023032-2d6b3134ecba?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-          description: "Calming scent, used in aromatherapy.",
-          cost: "$20",
-        },
-        {
-          name: "Jasmine",
-          image:
-            "https://images.unsplash.com/photo-1592729645009-b96d1e63d14b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-          description: "Sweet fragrance, promotes relaxation.",
-          cost: "$18",
+          image: "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?w=500",
+          description: "Calming scent that helps reduce stress and anxiety.",
+          cost: 18
         },
         {
           name: "Rosemary",
-          image:
-            "https://cdn.pixabay.com/photo/2019/10/11/07/12/rosemary-4541241_1280.jpg",
-          description: "Invigorating scent, often used in cooking.",
-          cost: "$15",
-        },
-        {
-          name: "Mint",
-          image:
-            "https://cdn.pixabay.com/photo/2016/01/07/18/16/mint-1126282_1280.jpg",
-          description: "Refreshing aroma, used in teas and cooking.",
-          cost: "$12",
-        },
-        {
-          name: "Lemon Balm",
-          image:
-            "https://cdn.pixabay.com/photo/2019/09/16/07/41/balm-4480134_1280.jpg",
-          description: "Citrusy scent, relieves stress and promotes sleep.",
-          cost: "$14",
-        },
-        {
-          name: "Hyacinth",
-          image:
-            "https://cdn.pixabay.com/photo/2019/04/07/20/20/hyacinth-4110726_1280.jpg",
-          description: "Known for its beautiful flowers and intense fragrance.",
-          cost: "$22",
-        },
-      ],
-    },
-    {
-      category: "Insect Repellent Plants",
-      plants: [
-        {
-          name: "Oregano",
-          image:
-            "https://cdn.pixabay.com/photo/2015/05/30/21/20/oregano-790702_1280.jpg",
-          description: "Contains compounds that can deter certain insects.",
-          cost: "$10",
-        },
-        {
-          name: "Marigold",
-          image:
-            "https://cdn.pixabay.com/photo/2022/02/22/05/45/marigold-7028063_1280.jpg",
-          description:
-            "Natural insect repellent, also adds color to the garden.",
-          cost: "$8",
-        },
-        {
-          name: "Geraniums",
-          image:
-            "https://cdn.pixabay.com/photo/2012/04/26/21/51/flowerpot-43270_1280.jpg",
-          description: "Adds pleasant scent while repelling common pests.",
-          cost: "$20",
-        },
-        {
-          name: "Basil",
-          image:
-            "https://cdn.pixabay.com/photo/2016/07/24/20/48/tulsi-1539181_1280.jpg",
-          description: "Repels flies and mosquitoes, also used in cooking.",
-          cost: "$9",
-        },
-        {
-          name: "Catnip",
-          image:
-            "https://cdn.pixabay.com/photo/2015/07/02/21/55/cat-829681_1280.jpg",
-          description: "Repels mosquitoes and attracts cats.",
-          cost: "$13",
-        },
-      ],
-    },
+          image: "https://images.unsplash.com/photo-1515549832467-872098e253b8?w=500",
+          description: "Fragrant herb that thrives in sunny spots.",
+          cost: 10
+        }
+      ]
+    }
   ];
 
-  const styleObj = {
-    backgroundColor: "#4CAF50",
-    color: "#fff!important",
-    padding: "15px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    fontSize: "20px",
+  // Retrieve and display the total quantity of items currently in the cart
+  const calculateTotalQuantity = () => { 
+    return cartItems ? cartItems.reduce((total, item) => total + item.quantity, 0) : 0; 
   };
 
-  const styleA = {
-    color: "white",
-    fontSize: "30px",
-    textDecoration: "none",
+  // Function to handle adding items to global Redux store and tracking locally
+  const handleAddToCart = (product) => {
+    dispatch(addItem(product)); 
+
+    setAddedToCart((prevState) => ({
+      ...prevState,
+      [product.name]: true, 
+    }));
   };
 
-  const handleAddToCart = (plant) => {
-    dispatch(addItem(plant));
-  };
-
+  // Handler for navigation clicks
   const handleCartClick = (e) => {
     e.preventDefault();
-    setShowCart(true);
+    setShowCart(true); // Show Cart View
   };
 
-  const handleContinueShopping = (e) => {
+  const handlePlantsClick = (e) => {
     e.preventDefault();
-    setShowCart(false);
+    setShowCart(false); // Return to Product Grid View
   };
 
   return (
     <div>
-      <div className="navbar" style={styleObj}>
-        <div className="tag">
-          <div className="luxury">
-            <img
-              src="https://cdn.pixabay.com/photo/2020/08/05/13/12/eco-5465432_1280.png"
-              alt=""
-            />
-            <a
-              href="/"
-              onClick={(e) => {
-                e.preventDefault();
-                onHomeClick();
-              }}
-            >
-              <div>
-                <h3 style={{ color: "white" }}>Paradise Nursery</h3>
-                <i style={{ color: "white" }}>Where Green Meets Serenity</i>
-              </div>
-            </a>
+      {/* Integrated Navigation Bar */}
+      <nav className="navbar" style={{ display: 'flex', justifyContent: 'space-between', padding: '15px 30px', background: '#4CAF50', color: 'white', alignItems: 'center' }}>
+        <div className="navbar-logo" style={{ fontSize: '24px', fontWeight: 'bold', cursor: 'pointer' }} onClick={handlePlantsClick}>
+          Paradise Nursery
+        </div>
+        <div className="navbar-links" style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+          <span style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={handlePlantsClick}>Plants</span>
+          <div className="cart-icon-container" style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={handleCartClick}>
+            <span className="cart-icon" style={{ fontSize: '24px' }}>🛒</span>
+            {/* Dynamic visual item badge counter */}
+            {calculateTotalQuantity() > 0 && (
+              <span className="cart-badge" style={{
+                position: 'absolute',
+                top: '-8px',
+                right: '-10px',
+                background: 'red',
+                color: 'white',
+                borderRadius: '50%',
+                padding: '2px 6px',
+                fontSize: '12px',
+                fontWeight: 'bold'
+              }}>
+                {calculateTotalQuantity()}
+              </span>
+            )}
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "50px" }}>
-          <div>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowCart(false);
-              }}
-              style={styleA}
-            >
-              Plants
-            </a>
-          </div>
-          <div>
-            <a href="#" onClick={handleCartClick} style={styleA}>
-              <div style={{ position: "relative" }}>
-                <h1 className="cart">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 256 256"
-                    height="68"
-                    width="68"
-                  >
-                    <rect width="156" height="156" fill="none"></rect>
-                    <circle cx="80" cy="216" r="12"></circle>
-                    <circle cx="184" cy="216" r="12"></circle>
-                    <path
-                      d="M42.3,72H221.7l-26.4,92.4A15.9,15.9,0,0,1,179.9,176H84.1a15.9,15.9,0,0,1-15.4-11.6L32.5,37.8A8,8,0,0,0,24.8,32H8"
-                      fill="none"
-                      stroke="#faf9f9"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                    ></path>
-                  </svg>
-                </h1>
-                {totalItems > 0 && (
-                  <span className="cart-quantity-count">{totalItems}</span>
-                )}
-              </div>
-            </a>
-          </div>
-        </div>
-      </div>
+      </nav>
 
+      {/* Conditional Rendering based on state */}
       {!showCart ? (
-        <div className="product-container">
-          {plantsArray.map((category, index) => (
-            <div key={index}>
-              <h1 className="category-name">{category.category}</h1>
-              <div className="product-list">
-                {category.plants.map((plant, plantIndex) => (
+        <div className="product-grid">
+          {plantsArray.map((category, index) => ( 
+            <div key={index} className="category-section">
+              <h1 className="category-title">{category.category}</h1>
+              <div className="product-list" style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
+                {category.plants.map((plant, plantIndex) => ( 
                   <div className="product-card" key={plantIndex}>
-                    <img
-                      className="product-image"
-                      src={plant.image}
-                      alt={plant.name}
+                    <img 
+                      className="product-image" 
+                      src={plant.image} 
+                      alt={plant.name} 
                     />
                     <div className="product-title">{plant.name}</div>
-                    <div className="product-description">
-                      {plant.description}
-                    </div>
-                    <div className="product-cost">{plant.cost}</div>
+                    <div className="product-description">{plant.description}</div>
+                    <div className="product-cost">${plant.cost}</div>
                     <button
-                      className={`product-button ${cart.some((item) => item.name === plant.name) ? "disabled" : ""}`}
-                      disabled={cart.some((item) => item.name === plant.name)}
+                      className="product-button"
+                      disabled={addedToCart[plant.name]} 
                       onClick={() => handleAddToCart(plant)}
                     >
-                      {cart.some((item) => item.name === plant.name)
-                        ? "Added to Cart"
-                        : "Add to Cart"}
+                      {addedToCart[plant.name] ? "Added to Cart" : "Add to Cart"}
                     </button>
                   </div>
                 ))}
@@ -281,12 +142,11 @@ function ProductList({ onHomeClick }) {
           ))}
         </div>
       ) : (
-        <CartItem onContinueShopping={handleContinueShopping} />
+        // When showCart is true, render the Cart view and pass down a function to navigate back
+        <CartItem onContinueShopping={() => setShowCart(false)} />
       )}
     </div>
   );
 }
-ProductList.propTypes = {
-  onHomeClick: PropTypes.func.isRequired,
-};
+
 export default ProductList;
